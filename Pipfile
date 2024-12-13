@@ -5,6 +5,11 @@ name = "pypi"
 
 [packages]
 django = "*"
+psycopg2 = "*"
+langchain = "*"
+langchain-community = "*"
+langchain-openai = "*"
+langgraph = "*"
 
 [dev-packages]
 
