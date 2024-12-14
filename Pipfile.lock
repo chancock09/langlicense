@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "13c6dcdcacd93f884d8e79ad3e747eb1802dea0ed5ab7e74152df03dcf7bb0d7"
+            "sha256": "54f3cfd38af280fb140d5371a1d1ed8b92f7d36c721f0ce006584fd77687140f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -586,6 +586,15 @@
             "markers": "python_full_version >= '3.9.0' and python_full_version < '4.0.0'",
             "version": "==2.0.9"
         },
+        "langgraph-checkpoint-postgres": {
+            "hashes": [
+                "sha256:37a93ce8d50289db18232675047f61f6ffb937f1e509212735a51403b199b428",
+                "sha256:4857406cdd2532b61c12af2e29aeb32f12ae167b98ed878718afe406ce2162bd"
+            ],
+            "index": "pypi",
+            "markers": "python_full_version >= '3.9.0' and python_full_version < '4.0.0'",
+            "version": "==2.0.8"
+        },
         "langgraph-sdk": {
             "hashes": [
                 "sha256:5b17fe7c0a0fe4b83170c9b8987e0f98dc0636fcc0166dbdba725cc8ffd9b1cf",
@@ -1031,6 +1040,22 @@
             ],
             "markers": "python_version >= '3.9'",
             "version": "==0.2.1"
+        },
+        "psycopg": {
+            "hashes": [
+                "sha256:644d3973fe26908c73d4be746074f6e5224b03c1101d302d9a53bf565ad64907",
+                "sha256:a5764f67c27bec8bfac85764d23c534af2c27b893550377e37ce59c12aac47a2"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==3.2.3"
+        },
+        "psycopg-pool": {
+            "hashes": [
+                "sha256:61774b5bbf23e8d22bedc7504707135aaf744679f8ef9b3fe29942920746a6ed",
+                "sha256:f6a22cff0f21f06d72fb2f5cb48c618946777c49385358e0c88d062c59cbd224"
+            ],
+            "markers": "python_version >= '3.8'",
+            "version": "==3.2.4"
         },
         "psycopg2": {
             "hashes": [
