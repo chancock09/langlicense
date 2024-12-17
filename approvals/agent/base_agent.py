@@ -1,10 +1,7 @@
 from langchain_openai import ChatOpenAI
-from langgraph.types import Command
+
 from langgraph.prebuilt import create_react_agent
 from functools import wraps
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from approvals.models import Approval
 from langgraph.checkpoint.postgres import PostgresSaver
 from langchain_core.tools import tool
 from langgraph.types import interrupt
@@ -45,15 +42,3 @@ class BaseAgent:
                 all_states.append(state)
 
             return all_states
-
-
-@receiver(post_save, sender=Approval)
-def continue_agent(sender, instance, **kwargs):
-    if instance.state == "approved":
-        # with PostgresSaver.from_conn_string(DB_URI) as checkpointer:
-        #     graph = create_react_agent(model, tools=[search, get_city], checkpointer=checkpointer)
-        #     invoked_result = graph.invoke(Command(resume=instance.response), config=instance.snapshot)
-        #     print(invoked_result["messages"][-1].content)
-        agent = BaseAgent(model, tools)
-        result = agent.run(inputs=Command(resume=instance.response), config=instance.snapshot)
-        print(result["messages"][-1].content)

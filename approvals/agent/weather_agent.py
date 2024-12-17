@@ -7,8 +7,13 @@ from langgraph.types import interrupt
 
 from langchain_community.tools.tavily_search import TavilySearchResults
 
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+from langgraph.types import Command
+from approvals.models import Approval
 
 ## Config
+
 
 prompt = "You tell people the weather in cities, and you talk like a pirate."
 default_input = {
@@ -18,7 +23,9 @@ default_input = {
 }
 default_config = {"configurable": {"thread_id": "12"}}
 
+
 ## Tools
+
 
 search = TavilySearchResults(k=1)
 
@@ -43,6 +50,7 @@ class WeatherAgent(BaseAgent):
 
 agent = WeatherAgent()
 
+
 ## Helpers
 
 
@@ -52,3 +60,15 @@ def run_agent(inputs=None, config=None):
 
 def render_snapshot(config):
     return agent.render_snapshot(config)
+
+
+@receiver(post_save, sender=Approval)
+def continue_agent(sender, instance, **kwargs):
+    if instance.state == "approved":
+        # with PostgresSaver.from_conn_string(DB_URI) as checkpointer:
+        #     graph = create_react_agent(model, tools=[search, get_city], checkpointer=checkpointer)
+        #     invoked_result = graph.invoke(Command(resume=instance.response), config=instance.snapshot)
+        #     print(invoked_result["messages"][-1].content)
+        agent = WeatherAgent()
+        result = agent.run(inputs=Command(resume=instance.response), config=instance.snapshot)
+        print(result["messages"][-1].content)
