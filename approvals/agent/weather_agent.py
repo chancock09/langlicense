@@ -1,6 +1,6 @@
 from langchain_openai import ChatOpenAI
 from langchain_community.tools.tavily_search import TavilySearchResults
-from approvals.agent.base_agent import BaseAgent, get_city
+from approvals.agent.base_agent import BaseAgent
 
 from langchain_core.tools import tool
 from langgraph.types import interrupt

@@ -21,9 +21,12 @@ class ApprovalAdmin(admin.ModelAdmin):
 
     def render_snapshot(self, obj):
         snapshot = agent.render_snapshot(obj.snapshot)
-        return "<br>".join(pformat(state) for state in snapshot)
 
-    render_snapshot.short_description = "Snapshot History"
+        messages = snapshot.values["messages"]
+
+        return messages
+
+    render_snapshot.short_description = "SnapshotHistory"
 
 
 @admin.register(AgentWebhook)

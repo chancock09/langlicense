@@ -37,8 +37,4 @@ class BaseAgent:
         with PostgresSaver.from_conn_string(self.db_uri) as checkpointer:
             graph = create_react_agent(self.model, tools=self.tools, checkpointer=checkpointer)
 
-            all_states = []
-            for state in graph.get_state_history(config):
-                all_states.append(state)
-
-            return all_states
+            return graph.get_state(config)
