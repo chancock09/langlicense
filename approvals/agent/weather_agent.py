@@ -7,11 +7,6 @@ from langgraph.types import interrupt
 
 from langchain_community.tools.tavily_search import TavilySearchResults
 
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from langgraph.types import Command
-from approvals.models import Approval
-
 ## Config
 
 
@@ -48,27 +43,4 @@ class WeatherAgent(BaseAgent):
         super().__init__(model, tools, name)
 
 
-agent = WeatherAgent()
-
-
-## Helpers
-
-
-def run_agent(inputs=default_input, config=default_config):
-    return agent.run(inputs, config)
-
-
-def render_snapshot(config):
-    return agent.render_snapshot(config)
-
-
-@receiver(post_save, sender=Approval)
-def continue_agent(sender, instance, **kwargs):
-    if instance.state == "approved":
-        # with PostgresSaver.from_conn_string(DB_URI) as checkpointer:
-        #     graph = create_react_agent(model, tools=[search, get_city], checkpointer=checkpointer)
-        #     invoked_result = graph.invoke(Command(resume=instance.response), config=instance.snapshot)
-        #     print(invoked_result["messages"][-1].content)
-        agent = WeatherAgent()
-        result = agent.run(inputs=Command(resume=instance.response), config=instance.snapshot)
-        print(result["messages"][-1].content)
+wather_agent = WeatherAgent()

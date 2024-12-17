@@ -7,9 +7,7 @@ load_dotenv()
 from django.contrib import admin
 from .models import Approval, AgentWebhook
 
-from approvals.agent.weather_agent import WeatherAgent
-
-agent = WeatherAgent()
+from approvals.agent.weather_agent import weather_agent
 
 
 @admin.register(Approval)
@@ -20,7 +18,7 @@ class ApprovalAdmin(admin.ModelAdmin):
     readonly_fields = ("render_history",)
 
     def render_history(self, obj):
-        history = agent.render_history(obj.snapshot)
+        history = weather_agent.render_history(obj.snapshot)
 
         result = []
         for state in history:
