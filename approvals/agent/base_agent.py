@@ -33,8 +33,8 @@ class BaseAgent:
             else:
                 return (result, snapshot)
 
-    def render_snapshot(self, config):
+    def reunder_history(self, config):
         with PostgresSaver.from_conn_string(self.db_uri) as checkpointer:
             graph = create_react_agent(self.model, tools=self.tools, checkpointer=checkpointer)
 
-            return graph.get_state(config)
+            return graph.get_state_history(config)

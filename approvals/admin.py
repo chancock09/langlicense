@@ -14,19 +14,22 @@ agent = WeatherAgent()
 
 @admin.register(Approval)
 class ApprovalAdmin(admin.ModelAdmin):
-    list_display = ("state", "response", "user", "created_at", "updated_at", "render_snapshot")
+    list_display = ("state", "response", "user", "created_at", "updated_at", "render_history")
     list_filter = ("state", "created_at", "updated_at")
     search_fields = ("user__username", "comment")
-    readonly_fields = ("render_snapshot",)
+    readonly_fields = ("render_history",)
 
-    def render_snapshot(self, obj):
-        snapshot = agent.render_snapshot(obj.snapshot)
+    def render_history(self, obj):
+        history = agent.render_history(obj.snapshot)
 
-        messages = snapshot.values["messages"]
+        result = []
+        for state in history:
+            result.append(state)
+            result("\n--")
 
-        return messages
+        return result
 
-    render_snapshot.short_description = "SnapshotHistory"
+    render_history.short_description = "SnapshotHistory"
 
 
 @admin.register(AgentWebhook)
