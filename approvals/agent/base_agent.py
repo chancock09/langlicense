@@ -5,7 +5,7 @@ from functools import wraps
 from langgraph.checkpoint.postgres import PostgresSaver
 from langchain_core.tools import tool
 from langgraph.types import interrupt
-
+from approvals.models import Approval
 
 DB_URI = "postgresql://postgres:postgres@localhost:5454/postgres?sslmode=disable"
 

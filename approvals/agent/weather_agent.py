@@ -54,7 +54,7 @@ agent = WeatherAgent()
 ## Helpers
 
 
-def run_agent(inputs=None, config=None):
+def run_agent(inputs=default_input, config=default_config):
     return agent.run(inputs, config)
 
 
