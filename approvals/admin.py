@@ -5,9 +5,9 @@ from pprint import pformat
 load_dotenv()
 
 from django.contrib import admin
-from .models import Approval, AgentWebhook
+from .models import Approval, Trigger
 
-from approvals.agent.weather_agent import weather_agent
+from approvals.agent import get_agent
 
 
 @admin.register(Approval)
@@ -18,19 +18,16 @@ class ApprovalAdmin(admin.ModelAdmin):
     readonly_fields = ("render_history",)
 
     def render_history(self, obj):
-        history = weather_agent.render_history(obj.snapshot)
+        agent = get_agent(obj.agent_name)
 
-        result = []
-        for state in history:
-            result.append(state)
-            result("\n--")
+        history = agent.render_history(obj.snapshot_config)
 
-        return result
+        return pformat([entry for entry in history])
 
     render_history.short_description = "SnapshotHistory"
 
 
-@admin.register(AgentWebhook)
-class AgentWebhookAdmin(admin.ModelAdmin):
-    list_display = ("agent", "thread_id", "message")
-    search_fields = ("agent", "thread_id")
+@admin.register(Trigger)
+class TriggerAdmin(admin.ModelAdmin):
+    list_display = ("agent_name", "config", "input")
+    search_fields = ("agent_name", "config")

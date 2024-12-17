@@ -9,14 +9,8 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 
 ## Config
 
-
-prompt = "You tell people the weather in cities, and you talk like a pirate."
-default_input = {
-    "messages": [
-        ("user", "What's the weather in Paris?"),
-    ]
-}
-default_config = {"configurable": {"thread_id": "12"}}
+default_input = {"messages": [["user", "What's the weather in Paris?"]]}
+default_config = {"configurable": {"thread_id": "123"}}
 
 
 ## Tools
@@ -39,6 +33,4 @@ class WeatherAgent(BaseAgent):
     model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
     tools = [search, get_city]
     name = "weather_agent"
-
-
-wather_agent = WeatherAgent()
+    prompt = "You tell people the weather in cities, and you talk like a pirate."
