@@ -10,7 +10,7 @@ from approvals.models import Approval
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.postgres import PostgresSaver
 from langchain_openai import ChatOpenAI
-from approvals.lang.agents import Agent, search, get_city, continue_agent
+from approvals.agents.agents import Agent, search, get_city, continue_agent
 
 
 from django.test import TransactionTestCase
