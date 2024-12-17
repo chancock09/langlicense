@@ -36,11 +36,9 @@ def get_city(query):
 
 
 class WeatherAgent(BaseAgent):
-    def __init__(self):
-        model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
-        tools = [search, get_city]
-        name = "weather_agent"
-        super().__init__(model, tools, name)
+    model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+    tools = [search, get_city]
+    name = "weather_agent"
 
 
 wather_agent = WeatherAgent()

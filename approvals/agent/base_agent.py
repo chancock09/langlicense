@@ -18,16 +18,14 @@ agent_registry = {}
 
 
 class BaseAgent:
-    def __init__(self, model, tools, name):
+    def __init__(self, name):
         self.db_uri = DB_URI
-        self.model = model
-        self.tools = tools
         self.name = name
         agent_registry[name] = self
 
     def run(self, inputs=None, config=None):
         with PostgresSaver.from_conn_string(self.db_uri) as checkpointer:
-            graph = create_react_agent(self.model, tools=self.tools, checkpointer=checkpointer)
+            graph = create_react_agent(self.get_model(), tools=self.get_tools(), checkpointer=checkpointer)
             result = graph.invoke(inputs, self.config)
             snapshot = graph.get_state(self.config)
 
@@ -43,9 +41,18 @@ class BaseAgent:
 
     def reunder_history(self, config):
         with PostgresSaver.from_conn_string(self.db_uri) as checkpointer:
-            graph = create_react_agent(self.model, tools=self.tools, checkpointer=checkpointer)
+            graph = create_react_agent(self.get_model(), tools=self.get_tools(), checkpointer=checkpointer)
 
             return graph.get_state_history(config)
+
+    def get_model(self):
+        return self.__class__.__class__
+
+    def get_tools(self):
+        return self.__class__.tools
+
+    def get_name(self):
+        return self.__class__.name
 
 
 @receiver(post_save, sender=Approval)
