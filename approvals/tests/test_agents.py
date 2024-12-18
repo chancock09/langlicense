@@ -36,7 +36,6 @@ class AgentTestCase(TransactionTestCase):
         self.assertIsNotNone(approval)
         self.assertEqual(approval.state, "pending")
         self.assertFalse(approval.response)
-        self.assertEqual(approval.comment, "")
 
     def test_approval_state_change_to_approved(self):
         inputs = {

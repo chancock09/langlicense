@@ -19,9 +19,9 @@ default_config = {"configurable": {"thread_id": "123"}}
 search = TavilySearchResults(k=1)
 
 
-@tool
-def get_city(query):
-    """Get the current city"""
+@tool("get_city", parse_docstring=True)
+def get_city():
+    """Find the users's current city if they have not provided it"""
     city = interrupt("Please provide city:")
     return city
 

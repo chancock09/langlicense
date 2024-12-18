@@ -9,25 +9,49 @@ class BaseAgent:
     def __init__(self):
         self.db_uri = DB_URI
 
+    def ask(self, question):
+        """Ask a question to the agent, no context (and therefore no thread/history/memory)"""
+
+        return self.run(
+            inputs={"messages": [["user", question]]},
+            config={"configurable": {"thread_id": "ask"}},  # TODO: idk... we need thread_id for checkpointing?
+        )
+
     def run(self, inputs=None, config=None):
-        from approvals.models import Approval
+        """Run the agent with inputs and config"""
+
+        from approvals.models import Approval, Result
 
         with PostgresSaver.from_conn_string(self.db_uri) as checkpointer:
             graph = self._create_graph(checkpointer)
-            result = graph.invoke(inputs, config)
+            output = graph.invoke(inputs, config)
             snapshot = graph.get_state(config)
 
             if snapshot.next:
                 approval, created = Approval.objects.get_or_create(
                     snapshot_config=snapshot.config,
-                    defaults={"state": "pending", "response": False, "comment": "", "agent_name": self.get_name()},
+                    defaults={
+                        "state": "pending",
+                        "response": False,
+                        "agent_name": self.get_name(),
+                        "thread_id": snapshot.config["configurable"]["thread_id"],
+                    },
                 )
 
                 return (None, snapshot)
             else:
-                return (result, snapshot)
+                result, created = Result.objects.get_or_create(
+                    snapshot_config=snapshot.config,
+                    defaults={
+                        "output": output["messages"][-1].content,
+                        "agent_name": self.get_name(),
+                        "thread_id": snapshot.config["configurable"]["thread_id"],
+                    },
+                )
+                return (output, snapshot)
 
-    def render_history(self, config):
+    def get_state_history(self, config):
+        """Return all StateSnapshots from the agent"""
         with PostgresSaver.from_conn_string(self.db_uri) as checkpointer:
             graph = self._create_graph(checkpointer)
 
@@ -37,6 +61,12 @@ class BaseAgent:
                 result.append(step)
 
             return result
+
+    def pretty_print_history(self, config):
+        history = self.get_state_history(config)
+        messages = history[0].values["messages"]
+
+        return "\n".join([msg.pretty_repr() for msg in messages[::-1]])
 
     def _create_graph(self, checkpointer):
         return create_react_agent(
