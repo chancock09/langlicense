@@ -13,12 +13,10 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 search = TavilySearchResults(k=1)
 
 
-@tool("get_city", parse_docstring=True)
-def get_city():
+@tool("get_location", parse_docstring=True)
+def get_location():
     """Find the users's current city if they have not provided it"""
     city = interrupt("Please provide city:")
-
-    print("provided city", city)
 
     return city
 
@@ -28,6 +26,6 @@ def get_city():
 
 class WeatherAgent(BaseAgent):
     model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
-    tools = [search, get_city]
+    tools = [search, get_location]
     name = "weather_agent"
     prompt = "You tell people the weather in cities, and you talk like a pirate. Before producing any output, you must use `review_response` to review the response."

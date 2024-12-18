@@ -83,6 +83,7 @@ class ApprovalAdmin(admin.ModelAdmin):
     fields = (
         "agent_name",
         "response",
+        "render_prompt",
         "render_history",
         "snapshot_config",
         "related_triggers_links",
@@ -91,11 +92,16 @@ class ApprovalAdmin(admin.ModelAdmin):
 
     readonly_fields = (
         "agent_name",
+        "render_prompt",
         "render_history",
         "snapshot_config",
         "related_triggers_links",
         "related_results_links",
     )
+
+    def render_prompt(self, obj):
+        agent = get_agent(obj.agent_name)
+        return agent.get_state_history(obj.snapshot_config)[0].tasks[0].interrupts[0].value
 
     def render_history(self, obj):
         agent = get_agent(obj.agent_name)

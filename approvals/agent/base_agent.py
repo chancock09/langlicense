@@ -26,10 +26,19 @@ class BaseAgent:
             graph = self._create_graph(checkpointer)
             output = graph.invoke(inputs, config)
 
+            print("\n\n")
+
+            print("output", output)
+
+            print("\n\n")
+
             snapshot = graph.get_state({"configurable": {"thread_id": config["configurable"]["thread_id"]}})
 
+            print("snapshot", snapshot)
+
+            print("\n\n")
+
             if snapshot.next:
-                print("NEXT")
                 approval = Approval.objects.create(
                     snapshot_config=snapshot.config,
                     state="pending",
