@@ -25,21 +25,21 @@ class BaseAgent:
         with PostgresSaver.from_conn_string(self.db_uri) as checkpointer:
             graph = self._create_graph(checkpointer)
             output = graph.invoke(inputs, config)
+
             snapshot = graph.get_state(config)
 
             if snapshot.next:
-                approval, created = Approval.objects.get_or_create(
+                print("NEXT")
+                approval = Approval.objects.create(
                     snapshot_config=snapshot.config,
-                    defaults={
-                        "state": "pending",
-                        "response": False,
-                        "agent_name": self.get_name(),
-                        "thread_id": snapshot.config["configurable"]["thread_id"],
-                    },
+                    state="pending",
+                    agent_name=self.get_name(),
+                    thread_id=snapshot.config["configurable"]["thread_id"],
                 )
 
-                return (None, snapshot)
+                return (output, snapshot)
             else:
+                print("RESULT")
                 result, created = Result.objects.get_or_create(
                     snapshot_config=snapshot.config,
                     defaults={
@@ -48,6 +48,7 @@ class BaseAgent:
                         "thread_id": snapshot.config["configurable"]["thread_id"],
                     },
                 )
+
                 return (output, snapshot)
 
     def get_state_history(self, config):

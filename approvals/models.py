@@ -30,7 +30,7 @@ def handle_trigger(sender, instance, created, **kwargs):
         if agent:
             agent.run(
                 inputs={"messages": [["user", instance.input]]},
-                config={"configurable": {"thread_id": instance.thread_id}},
+                config={"configurable": {"thread_id": str(instance.thread_id)}},
             )
         else:
             print(f"No agent found with name {instance.agent_name}")
@@ -47,29 +47,22 @@ class Approval(models.Model):
     agent_name = models.CharField(max_length=255, blank=True, null=True)
     snapshot_config = models.JSONField()
 
-    response = models.TextField()
+    response = models.TextField(default=None, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 
 @receiver(post_save, sender=Approval)
-def continue_agent(sender, instance, created, **kwargs):
+def handle_approval(sender, instance, created, **kwargs):
     if created:
         print("Approval created")
         return
 
-    if instance.state == "approved":
-        print("Approval approved with response:", instance.response)
-
+    if instance.response:
         agent_instance = get_agent(instance.agent_name)
 
-        if agent_instance:
-            output, snapshot = agent_instance.run(
-                inputs=Command(resume=instance.response), config=instance.snapshot_config
-            )
-        else:
-            print("No agent found")
+        output, snapshot = agent_instance.run(resume=Command(resume=instance.response), config=instance.snapshot_config)
     else:
         print("Approval not handled")
 
@@ -90,9 +83,3 @@ def handle_result(sender, instance, created, **kwargs):
     if created:
         print("Result created")
         return
-
-    print("Result updated")
-    print(instance.output)
-    print(instance.snapshot_config)
-    print(instance.agent_name)
-    print("----")
