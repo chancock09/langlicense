@@ -33,6 +33,7 @@ class BaseAgent:
                 approval = Approval.objects.create(
                     snapshot_config=snapshot.config,
                     state="pending",
+                    response=None,
                     agent_name=self.get_name(),
                     thread_id=snapshot.config["configurable"]["thread_id"],
                 )

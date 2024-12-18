@@ -74,7 +74,6 @@ class ApprovalAdmin(admin.ModelAdmin):
         "id",
         "agent_name",
         "thread_id",
-        "state",
         "response",
         "created_at",
         "updated_at",
@@ -83,7 +82,6 @@ class ApprovalAdmin(admin.ModelAdmin):
 
     fields = (
         "agent_name",
-        "state",
         "response",
         "render_history",
         "snapshot_config",

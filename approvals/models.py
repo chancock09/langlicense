@@ -62,7 +62,7 @@ def handle_approval(sender, instance, created, **kwargs):
     if instance.response:
         agent_instance = get_agent(instance.agent_name)
 
-        output, snapshot = agent_instance.run(resume=Command(resume=instance.response), config=instance.snapshot_config)
+        output, snapshot = agent_instance.run(inputs=Command(resume=instance.response), config=instance.snapshot_config)
     else:
         print("Approval not handled")
 
