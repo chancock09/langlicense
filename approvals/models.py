@@ -59,17 +59,12 @@ def continue_agent(sender, instance, created, **kwargs):
         print("Approval created")
         return
 
-    if instance.state == "approved":
+    if instance.response:
         print("Approval approved with response:", instance.response)
 
         agent_instance = get_agent(instance.agent_name)
 
-        if agent_instance:
-            output, snapshot = agent_instance.run(
-                inputs=Command(resume=instance.response), config=instance.snapshot_config
-            )
-        else:
-            print("No agent found")
+        output, snapshot = agent_instance.run(inputs=Command(resume=instance.response), config=instance.snapshot_config)
     else:
         print("Approval not handled")
 
