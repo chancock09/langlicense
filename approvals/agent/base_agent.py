@@ -26,7 +26,7 @@ class BaseAgent:
             graph = self._create_graph(checkpointer)
             output = graph.invoke(inputs, config)
 
-            snapshot = graph.get_state(config)
+            snapshot = graph.get_state({"configurable": {"thread_id": config["configurable"]["thread_id"]}})
 
             if snapshot.next:
                 print("NEXT")
