@@ -101,7 +101,11 @@ class ApprovalAdmin(admin.ModelAdmin):
 
     def render_prompt(self, obj):
         agent = get_agent(obj.agent_name)
-        return agent.get_state_history(obj.snapshot_config)[0].tasks[0].interrupts[0].value
+
+        try:
+            return agent.get_state_history(obj.snapshot_config)[0].tasks[0].interrupts[0].value
+        except Exception as e:
+            return "oh dam"
 
     def render_history(self, obj):
         agent = get_agent(obj.agent_name)

@@ -4,11 +4,8 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-from django.test import TestCase
 from django.db import connection
 from approvals.models import Approval
-from langgraph.prebuilt import create_react_agent
-from langgraph.checkpoint.postgres import PostgresSaver
 from langchain_openai import ChatOpenAI
 from approvals.agents.agents import Agent, search, get_city, continue_agent
 
@@ -17,6 +14,8 @@ from django.test import TransactionTestCase
 
 
 class AgentTestCase(TransactionTestCase):
+    reset_sequences = True
+
     def setUp(self):
         self.model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
         self.tools = [search, get_city]

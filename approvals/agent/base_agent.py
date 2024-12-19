@@ -85,6 +85,7 @@ class BaseAgent:
             tools=self.get_tools(),
             checkpointer=checkpointer,
             state_modifier=self.get_prompt(),
+            interrupt_before=["agent"],
         )
 
     def get_model(self):
