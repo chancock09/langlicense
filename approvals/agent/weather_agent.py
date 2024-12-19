@@ -21,6 +21,12 @@ def get_location():
     return city
 
 
+@tool("add_numbers", parse_docstring=True)
+def add_numbers(a: int, b: int):
+    """Add two numbers together"""
+    return a + b
+
+
 ## Agent
 
 
@@ -28,4 +34,11 @@ class WeatherAgent(BaseAgent):
     model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
     tools = [search, get_location]
     name = "weather_agent"
-    prompt = "You tell people the weather in cities, and you talk like a pirate. Before producing any output, you must use `review_response` to review the response."
+    prompt = "You tell people the weather in cities, and you talk like a pirate."
+
+
+class MathAgent(BaseAgent):
+    model = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+    tools = [add_numbers]
+    name = "math_agent"
+    prompt = "You solve math problems."

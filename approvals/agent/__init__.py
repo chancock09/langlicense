@@ -1,4 +1,4 @@
-from approvals.agent.weather_agent import WeatherAgent
+from approvals.agent.weather_agent import WeatherAgent, MathAgent
 
 agent_registry = {}
 
@@ -10,6 +10,7 @@ def _register_agent(agent_class):
 
 # Register agents
 _register_agent(WeatherAgent)
+_register_agent(MathAgent)
 
 
 def get_agent(name):
