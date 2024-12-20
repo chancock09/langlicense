@@ -13,6 +13,18 @@ from django.utils.html import format_html
 from django.urls import reverse
 
 
+def get_related_objects_links(obj, related_objects, admin_url_name):
+    links = [
+        format_html('<a href="{}">{}</a>', reverse(admin_url_name, args=[related_obj.id]), related_obj.id)
+        for related_obj in related_objects
+    ]
+    return format_html(", ".join(links))
+
+
+def get_related_objects(model, thread_id):
+    return model.objects.filter(thread_id=thread_id)
+
+
 class TriggerForm(forms.ModelForm):
     class Meta:
         model = Trigger
@@ -41,28 +53,18 @@ class TriggerAdmin(admin.ModelAdmin):
         return inline_instances
 
     def related_approvals(self, obj):
-        return Approval.objects.filter(thread_id=obj.thread_id)
+        return get_related_objects(Approval, obj.thread_id)
 
     def related_results(self, obj):
-        return Result.objects.filter(thread_id=obj.thread_id)
+        return get_related_objects(Result, obj.thread_id)
 
     def related_approvals_links(self, obj):
         approvals = self.related_approvals(obj)
-        links = [
-            format_html(
-                '<a href="{}">{}</a>', reverse("admin:approvals_approval_change", args=[approval.id]), approval.id
-            )
-            for approval in approvals
-        ]
-        return format_html(", ".join(links))
+        return get_related_objects_links(obj, approvals, "admin:approvals_approval_change")
 
     def related_results_links(self, obj):
         results = self.related_results(obj)
-        links = [
-            format_html('<a href="{}">{}</a>', reverse("admin:approvals_result_change", args=[result.id]), result.id)
-            for result in results
-        ]
-        return format_html(", ".join(links))
+        return get_related_objects_links(obj, results, "admin:approvals_result_change")
 
     related_approvals_links.short_description = "Related Approvals"
     related_results_links.short_description = "Related Results"
@@ -88,6 +90,7 @@ class ApprovalAdmin(admin.ModelAdmin):
         "snapshot_config",
         "related_triggers_links",
         "related_results_links",
+        "render_state",
     )
 
     readonly_fields = (
@@ -97,6 +100,7 @@ class ApprovalAdmin(admin.ModelAdmin):
         "snapshot_config",
         "related_triggers_links",
         "related_results_links",
+        "render_state",
     )
 
     def render_prompt(self, obj):
@@ -105,13 +109,19 @@ class ApprovalAdmin(admin.ModelAdmin):
         try:
             return agent.get_state_history(obj.snapshot_config)[0].tasks[0].interrupts[0].value
         except Exception as e:
-            return "oh dam"
+            return "No interrupt found"
 
     def render_history(self, obj):
         agent = get_agent(obj.agent_name)
         return agent.pretty_print_history(obj.snapshot_config)
 
-    render_history.short_description = "SnapshotHistory"
+    render_history.short_description = "Messages History"
+
+    def render_state(self, obj):
+        agent = get_agent(obj.agent_name)
+        return agent.get_state_history(obj.snapshot_config)
+
+    render_state.short_description = "State Snapshot"
 
     def get_inline_instances(self, request, obj=None):
         inline_instances = super().get_inline_instances(request, obj)
@@ -120,26 +130,18 @@ class ApprovalAdmin(admin.ModelAdmin):
         return inline_instances
 
     def related_triggers(self, obj):
-        return Trigger.objects.filter(thread_id=obj.thread_id)
+        return get_related_objects(Trigger, obj.thread_id)
 
     def related_results(self, obj):
-        return Result.objects.filter(thread_id=obj.thread_id)
+        return get_related_objects(Result, obj.thread_id)
 
     def related_triggers_links(self, obj):
         triggers = self.related_triggers(obj)
-        links = [
-            format_html('<a href="{}">{}</a>', reverse("admin:approvals_trigger_change", args=[trigger.id]), trigger.id)
-            for trigger in triggers
-        ]
-        return format_html(", ".join(links))
+        return get_related_objects_links(obj, triggers, "admin:approvals_trigger_change")
 
     def related_results_links(self, obj):
         results = self.related_results(obj)
-        links = [
-            format_html('<a href="{}">{}</a>', reverse("admin:approvals_result_change", args=[result.id]), result.id)
-            for result in results
-        ]
-        return format_html(", ".join(links))
+        return get_related_objects_links(obj, results, "admin:approvals_result_change")
 
     related_triggers_links.short_description = "Related Triggers"
     related_results_links.short_description = "Related Results"
@@ -185,28 +187,18 @@ class ResultAdmin(admin.ModelAdmin):
         return inline_instances
 
     def related_triggers(self, obj):
-        return Trigger.objects.filter(thread_id=obj.thread_id)
+        return get_related_objects(Trigger, obj.thread_id)
 
     def related_approvals(self, obj):
-        return Approval.objects.filter(thread_id=obj.thread_id)
+        return get_related_objects(Approval, obj.thread_id)
 
     def related_triggers_links(self, obj):
         triggers = self.related_triggers(obj)
-        links = [
-            format_html('<a href="{}">{}</a>', reverse("admin:approvals_trigger_change", args=[trigger.id]), trigger.id)
-            for trigger in triggers
-        ]
-        return format_html(", ".join(links))
+        return get_related_objects_links(obj, triggers, "admin:approvals_trigger_change")
 
     def related_approvals_links(self, obj):
         approvals = self.related_approvals(obj)
-        links = [
-            format_html(
-                '<a href="{}">{}</a>', reverse("admin:approvals_approval_change", args=[approval.id]), approval.id
-            )
-            for approval in approvals
-        ]
-        return format_html(", ".join(links))
+        return get_related_objects_links(obj, approvals, "admin:approvals_approval_change")
 
     related_triggers_links.short_description = "Related Triggers"
     related_approvals_links.short_description = "Related Approvals"

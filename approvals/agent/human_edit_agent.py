@@ -1,11 +1,9 @@
-from typing_extensions import TypedDict, Literal
+from typing_extensions import Literal
 from langgraph.graph import StateGraph, START, END, MessagesState
 from langgraph.checkpoint.memory import PostgresSaver
 from langgraph.types import Command, interrupt
 from langchain_openai import ChatOpenAI
 from langchain_core.tools import tool
-from langchain_core.messages import AIMessage
-from IPython.display import Image, display
 
 
 @tool

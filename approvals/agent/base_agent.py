@@ -31,14 +31,16 @@ class BaseAgent:
         """Run the agent with inputs and config"""
         from approvals.models import Approval, Result
 
-        graph = self._create_graph(checkpointer)
+        graph = self.get_graph(checkpointer)
         output = graph.invoke(inputs, config)
         snapshot = graph.get_state({"configurable": {"thread_id": config["configurable"]["thread_id"]}})
 
         if snapshot.next:
-            return self._create_approval(snapshot, output)
+            self._create_approval(snapshot, output)
         else:
-            return self._create_result(snapshot, output)
+            self._create_result(snapshot, output)
+
+        return (output, snapshot)
 
     def _create_approval(self, snapshot, output):
         from approvals.models import Approval
@@ -50,7 +52,6 @@ class BaseAgent:
             agent_name=self.get_name(),
             thread_id=snapshot.config["configurable"]["thread_id"],
         )
-        return (output, snapshot)
 
     def _create_result(self, snapshot, output):
         from approvals.models import Result
@@ -63,12 +64,11 @@ class BaseAgent:
                 "thread_id": snapshot.config["configurable"]["thread_id"],
             },
         )
-        return (output, snapshot)
 
     @with_postgres_saver
     def get_state_history(self, checkpointer, config):
         """Return all StateSnapshots from the agent"""
-        graph = self._create_graph(checkpointer)
+        graph = self.get_graph(checkpointer)
         return list(graph.get_state_history(config))
 
     def pretty_print_history(self, config):
@@ -76,7 +76,7 @@ class BaseAgent:
         messages = history[0].values["messages"]
         return "\n".join([msg.pretty_repr() for msg in messages[::-1]])
 
-    def _create_graph(self, checkpointer):
+    def get_graph(self, checkpointer):
         return create_react_agent(
             self.get_model(),
             tools=self.get_tools(),
@@ -96,6 +96,3 @@ class BaseAgent:
 
     def get_prompt(self):
         return self.__class__.prompt
-
-    def get_graph(self):
-        pass

@@ -1,4 +1,6 @@
-from approvals.agent.weather_agent import WeatherAgent, MathAgent
+from approvals.agent.weather_agent import WeatherAgent
+from approvals.agent.math_agent import MathAgent
+
 
 agent_registry = {}
 
